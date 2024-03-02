@@ -24,7 +24,6 @@
 
     .menuWrap {
       flex: auto;
-      background-color: fuchsia;
     }
 
     .loginWrap {
@@ -64,4 +63,9 @@
       }
     }
   }
+}
+
+.loginFormTitle {
+  font-size: 16px;
+  margin-bottom: 10px;
 }
