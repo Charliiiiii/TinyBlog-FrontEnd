@@ -2,6 +2,7 @@ import React, { useCallback, useMemo, useState } from "react"
 import styles from "./index.module.scss"
 import logo_with_name from "./imgs/logo_with_name.png"
 import { Avatar, Button, Col, Form, Input, Modal, Row, message } from "antd"
+import axios from "axios"
 
 const UserAvatar = () => {
   //用户状态 -> 显示头像/登录注册按钮
@@ -45,17 +46,27 @@ const UserAvatar = () => {
   //VerifyCode
   const [getVerifyCode, setGetVerifyCode] = useState(true)
 
-  const handleVerifyClick = useCallback(() => {
+  const handleVerifyClick = useCallback(async () => {
     setGetVerifyCode(false);
     countDownTimeFunc(60);
     const phoneNumber = loginForm.getFieldValue("phoneNumber");
-    let verifyCode = "123456"; //假设待完成
-    message.success(`verifycode: ${verifyCode}`)
-  }, [loginForm])
 
-
-
-
+    // 发送请求获取验证码
+    try {
+      let data = await axios.get(`/api/auth/getVerifyCode?phone=${phoneNumber}`)
+      console.log(data)
+      data = data.data
+      if (data?.code === 200) {
+        message.success(`验证码：${data?.data?.verifyCode || "xxxx"}`)
+      } else {
+        message.error(data?.msg || "获取验证码失败")
+      }
+    } catch (error) {
+      console.log(error)
+      message.error("获取验证码失败")
+    }
+    // message.success(`verifycode: ${verifyCode}`)
+  }, [countDownTimeFunc, loginForm])
 
 
   return (
