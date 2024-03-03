@@ -30,7 +30,7 @@ const UserAvatar = () => {
     }
   }, [])
 
-  //CountDownTime
+  //倒计时
   const [releaseSecond, setReleaseSecond] = useState(60)
   const countDownTimeFunc = useCallback((releaseSecond) => {
     setReleaseSecond(releaseSecond)
@@ -47,11 +47,16 @@ const UserAvatar = () => {
   const [getVerifyCode, setGetVerifyCode] = useState(true)
 
   const handleVerifyClick = useCallback(async () => {
-    setGetVerifyCode(false);
-    countDownTimeFunc(60);
     const phoneNumber = loginForm.getFieldValue("phoneNumber");
 
+    let reg = /^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\d{8}$/;
+    if (!reg.test(phoneNumber)) {
+      message.error("手机号无效")
+      return;
+    }
     // 发送请求获取验证码
+    setGetVerifyCode(false);
+    countDownTimeFunc(60);
     try {
       let data = await axios.get(`/api/auth/getVerifyCode?phone=${phoneNumber}`)
       console.log(data)
@@ -68,6 +73,20 @@ const UserAvatar = () => {
     // message.success(`verifycode: ${verifyCode}`)
   }, [countDownTimeFunc, loginForm])
 
+
+
+  //handleLoginClick
+  const handleLoginClick = useCallback(() => {
+    loginForm.validateFields()
+      .then((formData) => {
+        //发送请求到后端进行登录/注册
+        let { data } = axios.post("/api/auth/login", {
+          phone: formData?.phoneNumber,
+          verifyCode: formData?.verifyCode
+        })
+      })
+      .catch()
+  }, [loginForm])
 
   return (
     <>
@@ -122,7 +141,7 @@ const UserAvatar = () => {
           </Form.Item>
         </Form>
         <Form.Item>
-          <Button style={{ width: "100%" }} type="primary">登录 / 注册</Button>
+          <Button style={{ width: "100%" }} type="primary" onClick={handleLoginClick}>登录 / 注册</Button>
         </Form.Item>
       </Modal>
     </>
