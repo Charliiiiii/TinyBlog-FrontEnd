@@ -1,8 +1,10 @@
-import React, { useCallback, useMemo, useState } from "react"
+import React, { useCallback, useEffect, useMemo, useState } from "react"
 import styles from "./index.module.scss"
 import logo_with_name from "./imgs/logo_with_name.png"
-import { Avatar, Button, Col, Form, Input, Modal, Row, message } from "antd"
+import { Avatar, Button, Col, Dropdown, Form, Input, Modal, Popconfirm, Row, message } from "antd"
 import axios from "axios"
+import { useNavigate } from "react-router-dom";
+import { wait } from "@testing-library/user-event/dist/utils"
 
 const UserAvatar = () => {
   //用户状态 -> 显示头像/登录注册按钮
@@ -74,24 +76,73 @@ const UserAvatar = () => {
   }, [countDownTimeFunc, loginForm])
 
 
+  const handleCancle = useCallback(() => {
+    loginForm.resetFields();
+    setIsModalOpen(false);
+  }, [])
+
+  let getUserInfo = useCallback(async () => {
+    try {
+      let { data } = await axios.get("/api/auth/getUserInfo")
+      setUserInfo(data.data)
+    } catch (e) {
+      console.log(e)
+    }
+  }, [])
+
+  useEffect(() => {
+    let cookies = document.cookie.split(";")
+    let hasToken = cookies.some((value) => {
+      return value.trim().startsWith("access_token")
+    })
+    if (hasToken) {
+      getUserInfo()
+    }
+  }, [getUserInfo])
 
   //handleLoginClick
-  const handleLoginClick = useCallback(() => {
+  const handleLoginClick = useCallback(async () => {
     loginForm.validateFields()
-      .then((formData) => {
+      .then(async (formData) => {
         //发送请求到后端进行登录/注册
-        let { data } = axios.post("/api/auth/login", {
-          phone: formData?.phoneNumber,
-          verifyCode: formData?.verifyCode
-        })
+        try {
+          let { data } = await axios.post("/api/auth/login", {
+            phone: formData?.phoneNumber,
+            verifyCode: formData?.verifyCode
+          })
+          if (data?.code !== 200) {
+            message.error(data?.msg || "登陆失败")
+            return;
+          }
+          handleCancle()
+          setUserInfo(data.data)
+
+        } catch (e) {
+          console.log(e)
+        }
       })
       .catch()
-  }, [loginForm])
+  }, [loginForm, handleCancle])
+
+  const handleLogoutClick = useCallback(async () => {
+    let logout = await axios.post('/api/auth/userLogout')
+    setUserInfo(null)
+    message.success("注销成功！")
+
+  })
 
   return (
     <>
       {isLogin
-        ? <Avatar size={34} />
+        ?
+        <Popconfirm
+          title="确认退出？"
+          onConfirm={handleLogoutClick}
+          okText="确认"
+          cancelText="取消"
+        >
+          <Avatar size={34} style={{ cursor: "pointer" }} />
+        </Popconfirm>
         : (
           <div className={styles.button} >
             <button onClick={() => setIsModalOpen(true)}>
@@ -103,10 +154,7 @@ const UserAvatar = () => {
       <Modal
         title="登录畅享更多权益"
         open={isModalOpen}
-        onCancel={() => {
-          loginForm.resetFields();
-          setIsModalOpen(false);
-        }}
+        onCancel={handleCancle}
         centered
         footer={null}
       >
