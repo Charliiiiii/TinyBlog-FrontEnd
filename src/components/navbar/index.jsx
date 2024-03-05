@@ -1,21 +1,26 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react"
 import styles from "./index.module.scss"
 import logo_with_name from "./imgs/logo_with_name.png"
-import { Avatar, Button, Col, Dropdown, Form, Input, Modal, Popconfirm, Row, message } from "antd"
+import { Avatar, Button, Col, Form, Input, Modal, Popconfirm, Popover, Row, message } from "antd"
+import {
+  SearchOutlined
+} from '@ant-design/icons'
 import axios from "axios"
-import { useNavigate } from "react-router-dom";
-import { wait } from "@testing-library/user-event/dist/utils"
+import searchLogo from "./imgs/search.png";
+import downArrow from "./imgs/downArrow.png";
+import PopContent from "./popCard/popContent";
+import PopTitle from "./popCard/popTitle";
+import { useNavigate } from "react-router-dom"
 
-const UserAvatar = () => {
-  //用户状态 -> 显示头像/登录注册按钮
-  const [userInfo, setUserInfo] = useState(null);
-
-  const isLogin = useMemo(() => {
-    return userInfo !== null;
-  }, [userInfo]);
-
+const UserAvatar = ({
+  userInfo,
+  setUserInfo,
+  isLogin,
+  isModalOpen,
+  setIsModalOpen
+}) => {
   //登陆注册弹出框
-  const [isModalOpen, setIsModalOpen] = useState(false);
+
 
   //Form
   const [loginForm] = Form.useForm();
@@ -197,6 +202,23 @@ const UserAvatar = () => {
 }
 
 const Navbar = () => {
+  //用户状态 -> 显示头像/登录注册按钮
+  const [userInfo, setUserInfo] = useState(null);
+  const navigate = useNavigate();
+  const isLogin = useMemo(() => {
+    return userInfo !== null;
+  }, [userInfo]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  let handleCreateCenter = useCallback(() => {
+    // 先判断有没有登录
+    if (!isLogin) {
+      setIsModalOpen(true)
+      return;
+    }
+    //登陆后跳转链接
+    // navigate('/')
+  }, [isLogin])
+
   return (
     <div className={styles.container}>
       <div className={styles.centerWrap}>
@@ -204,13 +226,64 @@ const Navbar = () => {
           <img src={logo_with_name} alt="" />
         </div>
         <div className={styles.menuWrap}>
-          menu
+          <div className={styles.textsSpan}>
+            <div className={styles.textSpan} >
+              首页
+            </div>
+            <div className={styles.textSpan}>
+              沸点
+            </div>
+            <div className={styles.textSpan}>
+              直播
+            </div>
+            <div className={styles.textSpan}>
+              活动
+            </div>
+            <div className={styles.textSpan}>
+              竞赛
+            </div>
+            <div className={styles.textSpan}>
+              商城
+            </div>
+            <div className={styles.textSpan}>
+              APP
+            </div>
+            <div className={styles.textSpan}>
+              插件
+            </div>
+
+          </div>
+          <div className={styles.searchBar}>
+            <input type="text" placeholder="搜索小狗炒鱼" />
+            <div className={styles.searchIcon}>
+              <img src={searchLogo} alt="" />
+            </div>
+          </div>
+          <div className={styles.writeCenter}>
+            <div className={styles.writeContainer}>
+              <button className={styles.createButton} onClick={handleCreateCenter}>
+                创作者中心
+              </button>
+              <div className={styles.downArrow}>
+
+                <Popover placement="bottomRight" title={<PopTitle />} content={<PopContent />} arrow={false}>
+                  <img src={downArrow} alt="" />
+                </Popover>
+              </div>
+            </div>
+          </div>
         </div>
         <div className={styles.loginWrap}>
-          <UserAvatar />
+          <UserAvatar
+            setUserInfo={setUserInfo}
+            userInfo={userInfo}
+            isLogin={isLogin}
+            isModalOpen={isModalOpen}
+            setIsModalOpen={setIsModalOpen}
+          />
         </div>
       </div>
-    </div>
+    </div >
   )
 }
 

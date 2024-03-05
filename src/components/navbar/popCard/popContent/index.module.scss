@@ -1,0 +1,49 @@
+.content {
+  display: flex;
+  flex-direction: column;
+  width: 350px;
+  margin-top: 10px;
+
+  .title {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+
+    .titleLeft {
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .seeMore {
+      justify-content: end;
+      cursor: pointer;
+    }
+  }
+
+  .recommend {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+
+    .activity {
+      display: flex;
+      width: 100%;
+      align-items: center;
+
+
+      .tag {}
+
+      span {
+        margin: 8px 8px;
+        height: 20px;
+        line-height: 12px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+
+    }
+  }
+}
