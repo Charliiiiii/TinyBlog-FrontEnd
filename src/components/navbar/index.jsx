@@ -1,16 +1,13 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react"
 import styles from "./index.module.scss"
-import logo_with_name from "./imgs/logo_with_name.png"
 import { Avatar, Button, Col, Form, Input, Modal, Popconfirm, Popover, Row, message } from "antd"
-import {
-  SearchOutlined
-} from '@ant-design/icons'
 import axios from "axios"
 import searchLogo from "./imgs/search.png";
 import downArrow from "./imgs/downArrow.png";
 import PopContent from "./popCard/popContent";
 import PopTitle from "./popCard/popTitle";
-import { useNavigate } from "react-router-dom"
+import { Router, useLocation, useNavigate } from "react-router-dom"
+import IconWrap from "../iconwrap/iconwarp.js"
 
 const UserAvatar = ({
   userInfo,
@@ -216,63 +213,76 @@ const Navbar = () => {
       return;
     }
     //登陆后跳转链接
-    // navigate('/')
+    navigate('/createCenter')
   }, [isLogin])
+
+  const location = useLocation();
+  const isCreateCenter = useMemo(() => {
+    return location.pathname.startsWith("/createCenter")
+  }, [location])
 
   return (
     <div className={styles.container}>
       <div className={styles.centerWrap}>
-        <div className={styles.iconWrap}>
-          <img src={logo_with_name} alt="" />
-        </div>
-        <div className={styles.menuWrap}>
-          <div className={styles.textsSpan}>
-            <div className={styles.textSpan} >
-              首页
-            </div>
-            <div className={styles.textSpan}>
-              沸点
-            </div>
-            <div className={styles.textSpan}>
-              直播
-            </div>
-            <div className={styles.textSpan}>
-              活动
-            </div>
-            <div className={styles.textSpan}>
-              竞赛
-            </div>
-            <div className={styles.textSpan}>
-              商城
-            </div>
-            <div className={styles.textSpan}>
-              APP
-            </div>
-            <div className={styles.textSpan}>
-              插件
-            </div>
-
-          </div>
-          <div className={styles.searchBar}>
-            <input type="text" placeholder="搜索小狗炒鱼" />
-            <div className={styles.searchIcon}>
-              <img src={searchLogo} alt="" />
-            </div>
-          </div>
-          <div className={styles.writeCenter}>
-            <div className={styles.writeContainer}>
-              <button className={styles.createButton} onClick={handleCreateCenter}>
+        <IconWrap />
+        {
+          isCreateCenter
+            ? (
+              <div className={styles.menuWrap} style={{ fontSize: "20px", color: "#1d7dfa" }}>
                 创作者中心
-              </button>
-              <div className={styles.downArrow}>
-
-                <Popover placement="bottomRight" title={<PopTitle />} content={<PopContent />} arrow={false}>
-                  <img src={downArrow} alt="" />
-                </Popover>
               </div>
-            </div>
-          </div>
-        </div>
+            )
+            : (
+              <div className={styles.menuWrap}>
+                <div className={styles.textsSpan}>
+                  <div className={styles.textSpan} >
+                    首页
+                  </div>
+                  <div className={styles.textSpan}>
+                    沸点
+                  </div>
+                  <div className={styles.textSpan}>
+                    直播
+                  </div>
+                  <div className={styles.textSpan}>
+                    活动
+                  </div>
+                  <div className={styles.textSpan}>
+                    竞赛
+                  </div>
+                  <div className={styles.textSpan}>
+                    商城
+                  </div>
+                  <div className={styles.textSpan}>
+                    APP
+                  </div>
+                  <div className={styles.textSpan}>
+                    插件
+                  </div>
+
+                </div>
+                <div className={styles.searchBar}>
+                  <input type="text" placeholder="搜索小狗炒鱼" />
+                  <div className={styles.searchIcon}>
+                    <img src={searchLogo} alt="" />
+                  </div>
+                </div>
+                <div className={styles.writeCenter}>
+                  <div className={styles.writeContainer}>
+                    <button className={styles.createButton} onClick={handleCreateCenter}>
+                      创作者中心
+                    </button>
+                    <div className={styles.downArrow}>
+
+                      <Popover placement="bottomRight" title={<PopTitle />} content={<PopContent />} arrow={false}>
+                        <img src={downArrow} alt="" />
+                      </Popover>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )
+        }
         <div className={styles.loginWrap}>
           <UserAvatar
             setUserInfo={setUserInfo}

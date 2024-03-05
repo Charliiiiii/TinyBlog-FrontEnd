@@ -3,7 +3,7 @@ import { Button } from 'antd';
 import Home from "./pages/home/index.js";
 import Navbar from './components/navbar/index.jsx';
 import './App.css';
-
+import CreateHome from './components/createHome/createHome.js';
 import {
   createBrowserRouter,
   Outlet,
@@ -25,14 +25,11 @@ const router = createBrowserRouter([{
   children: [{
     path: '/',
     element: <Home />
+  }, {
+    path: '/createCenter',
+    element: <CreateHome />
   }]
-},
-  //  {
-  //   path: '/create/home',
-  //   element: <CreateHome />
-  // }
-
-])
+}])
 
 
 const App = () => (
