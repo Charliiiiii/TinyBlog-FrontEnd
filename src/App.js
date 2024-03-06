@@ -3,7 +3,7 @@ import { Button } from 'antd';
 import Home from "./pages/home/index.js";
 import Navbar from './components/navbar/index.jsx';
 import './App.css';
-import CreateHome from './components/createHome/createHome.js';
+import CreateHome from './components/createHome/index.js';
 import {
   createBrowserRouter,
   Outlet,
