@@ -3,7 +3,9 @@ import { Button } from 'antd';
 import Home from "./pages/home/index.js";
 import Navbar from './components/navbar/index.jsx';
 import './App.css';
-import CreateHome from './components/createHome/index.js';
+import CreateHome from './pages/createHome/index.js';
+import WriteArticle from './pages/writeArticle/index.jsx';
+
 import {
   createBrowserRouter,
   Outlet,
@@ -28,6 +30,9 @@ const router = createBrowserRouter([{
   }, {
     path: '/createCenter',
     element: <CreateHome />
+  }, {
+    path: '/writeArticle',
+    element: <WriteArticle />
   }]
 }])
 

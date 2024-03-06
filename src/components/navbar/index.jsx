@@ -17,8 +17,6 @@ const UserAvatar = ({
   setIsModalOpen
 }) => {
   //登陆注册弹出框
-
-
   //Form
   const [loginForm] = Form.useForm();
 
@@ -126,11 +124,12 @@ const UserAvatar = ({
       .catch()
   }, [loginForm, handleCancle])
 
+  const navigate = useNavigate()
   const handleLogoutClick = useCallback(async () => {
     let logout = await axios.post('/api/auth/userLogout')
     setUserInfo(null)
     message.success("注销成功！")
-
+    navigate('/')
   })
 
   return (
@@ -176,7 +175,7 @@ const UserAvatar = ({
                   noStyle
                   rules={[{ required: true, message: "验证码不能为空" }]}
                 >
-                  <Input placeholder="请输入验证码" />
+                  <Input placeholder="请输入验证码" onPressEnter={handleLoginClick} />
                 </Form.Item>
               </Col>
               <Col span={6}>
@@ -218,7 +217,7 @@ const Navbar = () => {
 
   const location = useLocation();
   const isCreateCenter = useMemo(() => {
-    return location.pathname.startsWith("/createCenter")
+    return (location.pathname.startsWith("/createCenter") || location.pathname.startsWith("/writeArticle"))
   }, [location])
 
   return (
