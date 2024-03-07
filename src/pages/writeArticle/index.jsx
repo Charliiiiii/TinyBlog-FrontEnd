@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import styles from "./index.module.scss"
-import { Button, Checkbox, Radio, Tag, message } from "antd";
+import { Button, Checkbox, Radio, Tag, Upload, message } from "antd";
 import '@wangeditor/editor/dist/css/style.css' // 引入 css
 import { Editor, Toolbar } from '@wangeditor/editor-for-react'
 import { IDomEditor, IEditorConfig, IToolbarConfig } from '@wangeditor/editor'
@@ -36,14 +36,23 @@ const WriteArticle = () => {
   //发布文章的逻辑
   const [isSending, setIsSending] = useState(false);
   const navigate = useNavigate()
+  const [coverList, setCoverList] = useState([]);
   const handlePublishClick = useCallback(async () => {
+    //取url
+    let cover_url = null;
+
+    if (coverList.length > 0) {
+      cover_url = coverList[0]?.xhr || coverList[0]?.url || null;
+
+    }
+    console.log(coverList)
     try {
       setIsSending(true)
       const { data } = await axios.post('/api/article', {
         title: inputValue,
         content: html,
-        category: categoryValue
-
+        category: categoryValue,
+        cover_url
       })
       if (data.code !== 200) {
         message.error(data.msg)
@@ -57,8 +66,9 @@ const WriteArticle = () => {
     }
     setIsSending(false)
 
-  }, [inputValue, html, categoryValue, navigate])
+  }, [inputValue, html, categoryValue, navigate, coverList])
 
+  //富文本参数配置
   const toolbarConfig = {
   }
   const editorConfig = {
@@ -81,6 +91,33 @@ const WriteArticle = () => {
     }
   }
 
+  //上传照片
+
+
+  const props = {
+    beforeUpload: (file) => {
+      const imgType = ["image/png", "image/jpg", "image/jpeg"]
+      const isType = imgType.includes(file.type)
+      if (!isType) {
+        message.error("文件类型错误！")
+        return false
+      }
+      return true;
+    },
+    onChange: (info) => {
+      setCoverList(info?.fileList || [])
+    },
+    customRequest: async (option) => {
+      const formData = new FormData()
+      formData.append("file", option.file)
+      const { data } = await axios.post("/api/common/uploadFile", formData)
+      if (data.code !== 200) {
+        option.onError(data.msg)
+        return
+      }
+      option.onSuccess(data, data.data.url)
+    }
+  };
   return (
     <div className={styles.writeWrapper}>
       <div div className={styles.writeArea} >
@@ -112,11 +149,23 @@ const WriteArticle = () => {
           <div className={styles.button}>
             <Button type="primary" loading={isSending} onClick={handlePublishClick}>发布文章</Button>
           </div>
+          <div className={styles.uploadFile}>
+            <Upload
+              listType="picture-card"
+              fileList={coverList}
+              maxCount={1}
+              {...props}
+              accept="image/png, image/jpg, image/jpeg"
+            >
+              {coverList.length < 1 && "上传封面"}
+            </Upload>
+          </div>
           <Radio.Group
             onChange={onCategoryChange}
             value={categoryValue}
             style={{ display: "flex", flexDirection: "column", marginLeft: "20px", gap: "15px" }}
             disabled={isSending}
+
           >
             <Radio value={"technique"} >技术</Radio>
             <Radio value={"food"}>美食</Radio>
