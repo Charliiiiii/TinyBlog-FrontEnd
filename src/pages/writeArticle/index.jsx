@@ -1,24 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import styles from "./index.module.scss"
 import { Button, Checkbox, Radio, Tag, message } from "antd";
 import '@wangeditor/editor/dist/css/style.css' // 引入 css
 import { Editor, Toolbar } from '@wangeditor/editor-for-react'
 import { IDomEditor, IEditorConfig, IToolbarConfig } from '@wangeditor/editor'
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const WriteArticle = () => {
   const [editor, setEditor] = useState(null)
   const [html, setHtml] = useState('')
-  // 模拟 ajax 请求，异步设置 html
-  useEffect(() => {
-    setTimeout(() => {
-      setHtml('<p>hello world</p>')
-    }, 1500)
-  }, [])
-  const toolbarConfig = {}
-  const editorConfig = {
-    scroll: false,                        // JS 语法
-    placeholder: '请输入内容...',
-  }
+
   // 及时销毁 editor ，重要！
   useEffect(() => {
     return () => {
@@ -34,12 +26,61 @@ const WriteArticle = () => {
       message.error("标题不能超过10个字哦~")
       return;
     }
-    setValue(e.target.value)
+    setInputValue(e.target.value)
   }
-  const [value, setValue] = useState(1);
-  const onChange = (e) => {
-    setValue(e.target.value);
+  const [categoryValue, setCategoryValue] = useState("technique");
+  const onCategoryChange = (e) => {
+    setCategoryValue(e.target.value);
   };
+
+  //发布文章的逻辑
+  const [isSending, setIsSending] = useState(false);
+  const navigate = useNavigate()
+  const handlePublishClick = useCallback(async () => {
+    try {
+      setIsSending(true)
+      const { data } = await axios.post('/api/article', {
+        title: inputValue,
+        content: html,
+        category: categoryValue
+
+      })
+      if (data.code !== 200) {
+        message.error(data.msg)
+        return;
+      }
+      message.success(data.msg)
+
+      navigate("/createCenter")
+    } catch (e) {
+      console.log(e)
+    }
+    setIsSending(false)
+
+  }, [inputValue, html, categoryValue, navigate])
+
+  const toolbarConfig = {
+  }
+  const editorConfig = {
+    scroll: false,
+    placeholder: '请输入内容...',
+    readonly: isSending,
+    MENU_CONF: {
+      uploadImage: {
+        customUpload: async (file, insertFn) => {
+          const formData = new FormData()
+          formData.append("file", file)
+          const { data } = await axios.post("/api/common/uploadFile", formData, {
+            headers: {
+              "content-Type": "multipart/form-data"
+            }
+          })
+          insertFn(data.data.url)
+        }
+      }
+    }
+  }
+
   return (
     <div className={styles.writeWrapper}>
       <div div className={styles.writeArea} >
@@ -48,6 +89,7 @@ const WriteArticle = () => {
           value={inputValue}
           type="text"
           placeholder="请输入文章标题..."
+          disabled={isSending}
         />
         <div style={{ height: "100%" }}>
           <Toolbar
@@ -68,19 +110,20 @@ const WriteArticle = () => {
       <div className={styles.tagWrapper}>
         <div className={styles.tagArea}>
           <div className={styles.button}>
-            <Button type="primary" >发布文章</Button>
+            <Button type="primary" loading={isSending} onClick={handlePublishClick}>发布文章</Button>
           </div>
           <Radio.Group
-            onChange={onChange}
-            value={value}
-            style={{ display: "flex", flexDirection: "column", marginLeft: "20px", gap: "15px" }
-            }>
-            <Radio value={1} >技术</Radio>
-            <Radio value={2}>美食</Radio>
-            <Radio value={3}>电影</Radio>
-            <Radio value={4}>摄影</Radio>
-            <Radio value={5}>学习</Radio>
-            <Radio value={6}>生活</Radio>
+            onChange={onCategoryChange}
+            value={categoryValue}
+            style={{ display: "flex", flexDirection: "column", marginLeft: "20px", gap: "15px" }}
+            disabled={isSending}
+          >
+            <Radio value={"technique"} >技术</Radio>
+            <Radio value={"food"}>美食</Radio>
+            <Radio value={"movie"}>电影</Radio>
+            <Radio value={"photography"}>摄影</Radio>
+            <Radio value={"study"}>学习</Radio>
+            <Radio value={"life"}>生活</Radio>
           </Radio.Group>
         </div>
       </div>

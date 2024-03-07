@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from 'antd';
-import Home from "./pages/home/index.js";
+import Home from "./pages/home/index.jsx";
 import Navbar from './components/navbar/index.jsx';
 import './App.css';
 import CreateHome from './pages/createHome/index.js';

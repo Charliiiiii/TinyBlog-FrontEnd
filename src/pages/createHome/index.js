@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 
 const CreateHome = () => {
   const navigate = useNavigate()
-  const handleWriteButton = () => {
+  const handlePublishClick = () => {
     navigate("/writeArticle")
   }
   const [ariticleList, setAriticleList] = useState([])
@@ -14,7 +14,7 @@ const CreateHome = () => {
   return (
     <div className={styles.wrapper}>
       <div className={styles.headWrapper}>
-        <button onClick={handleWriteButton}>写文章</button>
+        <button onClick={handlePublishClick}>写文章</button>
         <div className={styles.inputWrapper}>
           <input type="text" placeholder="请输入标题关键词"></input>
           <span><img src={search}></img></span>
