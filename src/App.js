@@ -5,7 +5,7 @@ import Navbar from './components/navbar/index.jsx';
 import './App.css';
 import CreateHome from './pages/createHome/index.jsx';
 import WriteArticle from './pages/writeArticle/index.jsx';
-
+import Single from './pages/single/index.jsx';
 import {
   createBrowserRouter,
   Outlet,
@@ -33,6 +33,9 @@ const router = createBrowserRouter([{
   }, {
     path: '/writeArticle',
     element: <WriteArticle />
+  }, {
+    path: '/single',
+    element: <Single />
   }]
 }])
 

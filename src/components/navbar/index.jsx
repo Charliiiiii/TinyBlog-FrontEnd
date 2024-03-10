@@ -6,7 +6,7 @@ import searchLogo from "./imgs/search.png";
 import downArrow from "./imgs/downArrow.png";
 import PopContent from "./popCard/popContent";
 import PopTitle from "./popCard/popTitle";
-import { Router, useLocation, useNavigate } from "react-router-dom"
+import { Link, Router, useLocation, useNavigate } from "react-router-dom"
 import IconWrap from "../iconwrap/iconwarp.js"
 
 const UserAvatar = ({
@@ -234,9 +234,12 @@ const Navbar = () => {
             : (
               <div className={styles.menuWrap}>
                 <div className={styles.textsSpan}>
-                  <div className={styles.textSpan} >
-                    首页
-                  </div>
+                  <Link to="/">
+                    <div className={styles.textSpan} >
+                      首页
+                    </div>
+                  </Link>
+
                   <div className={styles.textSpan}>
                     沸点
                   </div>

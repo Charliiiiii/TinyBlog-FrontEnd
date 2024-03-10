@@ -87,14 +87,29 @@ const CreateHome = () => {
     )
   }
 
+  //搜索关键词
+  const [inputValue, setInputValue] = useState("")
 
+  //获取表单值
+  const handleInputChange = useCallback((event) => {
+    event.preventDefault();
+    setInputValue(event.target.value);
+
+  }, [inputValue])
+  //搜索
+  const handleSearchClick = useCallback(() => {
+    axios.get(`/api/article/bykeyword/${inputValue}`)
+      .then((response) => {
+        setAriticleList(response.data.data)
+      })
+  })
   return (
     <div className={styles.wrapper}>
       <div className={styles.headWrapper}>
         <button onClick={handlePublishClick}>写文章</button>
         <div className={styles.inputWrapper}>
-          <input type="text" placeholder="请输入标题关键词"></input>
-          <span><img src={search}></img></span>
+          <input type="text" placeholder="请输入标题关键词" value={inputValue} onChange={handleInputChange}></input>
+          <span><img src={search} onClick={handleSearchClick}></img></span>
         </div>
       </div>
       <div className={styles.contentWrapper}>

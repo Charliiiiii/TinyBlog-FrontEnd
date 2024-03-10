@@ -25,7 +25,6 @@ const WriteArticle = () => {
     }
     axios.get(`/api/article/${articleId}/article`)
       .then(response => {
-        console.log(response.data.data[0])
         const { title, content, cover_url, category } = response.data.data[0];
 
         setInputValue(title);
