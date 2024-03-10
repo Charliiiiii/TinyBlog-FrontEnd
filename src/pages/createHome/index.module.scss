@@ -85,5 +85,76 @@
       justify-content: center;
       align-items: center;
     }
+
+    .articleItemWrapper {
+      display: flex;
+      width: 100%;
+      height: 98px;
+      margin: 10px 10px;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #f1f2f5;
+
+      .left {
+        display: flex;
+        margin: 10px 20px;
+        flex-direction: column;
+        height: 80%;
+        width: 90%;
+        gap: 5px;
+
+        .title {
+          font-weight: 600;
+          font-size: 20px;
+          line-height: 24px;
+          color: black;
+        }
+
+        .content {
+          color: #8a919f;
+          width: 100%;
+          height: 22px;
+          font-size: 16px;
+          line-height: 24px;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          overflow: hidden;
+        }
+
+        .Footer {
+          display: flex;
+          align-items: center;
+          gap: 20px;
+
+          .username {
+            color: #8a919f;
+            font-size: 16px;
+            line-height: 22px;
+          }
+
+          img {
+            cursor: pointer;
+          }
+
+          .category {
+            color: #1e80ff;
+            font-size: 15px;
+          }
+        }
+      }
+
+      .cover {
+        height: 80%;
+        display: flex;
+        justify-content: flex-end;
+
+        img {
+          width: 108px;
+          height: 72px;
+          object-fit: cover;
+          border-radius: 8px;
+        }
+      }
+    }
   }
 }

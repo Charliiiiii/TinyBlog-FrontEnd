@@ -1,61 +1,201 @@
-.homeContentWrapper {
+.homeWrapper {
   display: flex;
-  width: calc(1000px + 40px);
-  height: 800px;
+  max-width: 1200px;
   margin: 20px auto;
-  gap: 20px;
 
-  .homeLeftBar {
+  .leftWrapper {
     display: flex;
-    flex-direction: column;
-    flex: 2;
-    background-color: #fff;
+    justify-content: center;
+    width: 180px;
     padding: 8px;
+    background-color: #fff;
+    height: 350px;
 
-    .item {
+    .section {
+      margin-top: 10px;
       display: flex;
-      width: calc(100% - 20px);
-      height: 50px;
-      margin: 10px 10px;
-      justify-content: start;
-      align-items: center;
-      border-radius: 10px;
+      flex-direction: column;
+      width: 154px;
 
-      img {
-        width: 18px;
-        margin: 0 15px;
-      }
 
-      span {
-        font-size: 18px;
-        font-weight: 700;
+      .class {
+        display: flex;
+        align-items: center;
+        width: 120px;
+        height: 35px;
+        padding: 10px 17px;
         color: #515767;
-      }
 
-      &:hover {
-        background-color: #f7f8fa;
+        font-size: 16px;
+        font-weight: 500;
+        cursor: pointer;
+        gap: 10px;
+        // border-bottom: 1px solid #cdcdcd;
 
+        &:hover {
+          background-color: #f7f8fa;
+          color: #1e80ff;
+          border-radius: 5px;
+        }
+
+        img {
+          width: 14px;
+
+        }
       }
     }
-
-
   }
 
-  .homeCenter {
-    flex: 6;
+  .middleContent {
+    width: 720px;
     background-color: #fff;
-  }
+    margin: 0 20px;
+    padding: 10px;
+    min-height: 700px;
 
-  .homeRightBar {
-    flex: 2;
-    background-color: #fff;
-    padding: 8px;
-
-    .rank {
+    .articleItemWrapper {
+      display: flex;
       width: 100%;
-      background-color: paleturquoise;
-      height: 50%;
+      height: 98px;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #f1f2f5;
+
+      .leftBox {
+        display: flex;
+        margin: 10px 20px;
+        flex-direction: column;
+        height: 80%;
+        width: 90%;
+        gap: 5px;
+
+        .title {
+          font-weight: 600;
+          font-size: 20px;
+          line-height: 24px;
+          color: black;
+        }
+
+        .content {
+          color: #8a919f;
+          width: 100%;
+          height: 22px;
+          font-size: 16px;
+          line-height: 24px;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          overflow: hidden;
+        }
+
+        .usernameAndCategory {
+          display: flex;
+          justify-content: space-between;
+
+          .username {
+            color: #8a919f;
+            font-size: 14px;
+            line-height: 22px;
+          }
+
+          .category {
+            color: #1e80ff;
+            font-size: 14px;
+          }
+        }
+      }
+
+      .cover {
+        height: 80%;
+        display: flex;
+        justify-content: flex-end;
+
+        img {
+          width: 108px;
+          height: 72px;
+          object-fit: cover;
+          border-radius: 8px;
+        }
+      }
     }
+  }
+
+  .rightWrapper {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    width: 260px;
+    height: 260px;
+    background-color: #fff;
+    padding: 10px;
+
+    .titleBar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 240px;
+      height: 40px;
+      padding: 0px 8px;
+      border-bottom: 1px solid #f1f2f5;
+
+      .title {
+        display: flex;
+        font-size: 15px;
+        font-weight: normal;
+        gap: 7px;
+        align-items: center;
+
+        .recoPic {
+          margin-left: 5px;
+        }
+      }
+
+      .changeBar {
+        cursor: pointer;
+        display: flex;
+        font-size: 13px;
+        color: #949ba7;
+        gap: 7px;
+        align-items: center;
+      }
+    }
+
+    .recommend {
+      display: flex;
+      flex-direction: column;
+      padding: 0px 8px;
+      height: 200px;
+      width: 240px;
+      background-color: #fff;
+
+      .item {
+        display: flex;
+        align-items: center;
+        height: 30px;
+        width: 220px;
+        padding: 10px;
+        gap: 20px;
+        border-bottom: 1px solid #f5f4f1;
+        cursor: pointer;
+
+        .nums {
+          display: flex;
+          width: 15px;
+          font-weight: 600;
+          font-size: 15px;
+          justify-content: center;
+        }
+
+        .text {
+          width: 175px;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          overflow: hidden;
+          font-size: 15px;
+        }
+      }
+    }
+
+
   }
 
 

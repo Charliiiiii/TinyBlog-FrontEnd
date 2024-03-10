@@ -1,15 +1,46 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import styles from "./index.module.scss"
 import { Button, Checkbox, Radio, Tag, Upload, message } from "antd";
 import '@wangeditor/editor/dist/css/style.css' // 引入 css
 import { Editor, Toolbar } from '@wangeditor/editor-for-react'
 import { IDomEditor, IEditorConfig, IToolbarConfig } from '@wangeditor/editor'
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { Content } from "antd/es/layout/layout";
 
 const WriteArticle = () => {
   const [editor, setEditor] = useState(null)
   const [html, setHtml] = useState('')
+
+  // 获取编辑文章
+  const location = useLocation();
+  const articleId = useMemo(() => {
+    let id = new URLSearchParams(location.search).get("id")
+    return id ? parseInt(id) : id
+  }, [])
+
+  useEffect(() => {
+    if (!articleId) {
+      return;
+    }
+    axios.get(`/api/article/${articleId}/article`)
+      .then(response => {
+        console.log(response.data.data[0])
+        const { title, content, cover_url, category } = response.data.data[0];
+
+        setInputValue(title);
+        setHtml(content);
+        if (cover_url) {
+          setCoverList([{
+            uid: '-1',
+            name: 'image.png',
+            status: 'done',
+            url: cover_url,
+          }])
+        }
+        setCategoryValue(category)
+      })
+  }, [articleId])
 
   // 及时销毁 editor ，重要！
   useEffect(() => {
@@ -22,8 +53,8 @@ const WriteArticle = () => {
   const [inputValue, setInputValue] = useState("")
 
   const handleInputChange = (e) => {
-    if (e.target.value.length > 10) {
-      message.error("标题不能超过10个字哦~")
+    if (e.target.value.length > 30) {
+      message.error("标题不能超过30个字哦~")
       return;
     }
     setInputValue(e.target.value)
@@ -45,15 +76,19 @@ const WriteArticle = () => {
       cover_url = coverList[0]?.xhr || coverList[0]?.url || null;
 
     }
-    console.log(coverList)
     try {
       setIsSending(true)
-      const { data } = await axios.post('/api/article', {
+      const postData = {
         title: inputValue,
         content: html,
         category: categoryValue,
         cover_url
-      })
+      }
+      // 获取文章 id
+      if (articleId) {
+        postData.id = articleId
+      }
+      const { data } = await axios.post('/api/article', postData)
       if (data.code !== 200) {
         message.error(data.msg)
         return;
