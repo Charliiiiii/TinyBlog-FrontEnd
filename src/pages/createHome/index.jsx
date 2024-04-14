@@ -7,6 +7,20 @@ import axios from "axios";
 import deletepic from "./imgs/删除.png"
 import editpic from "./imgs/编辑.png"
 
+const debounce = (callback, delay = 1000) => {
+  let timer = null
+  return function () {
+    let arg = arguments
+    let _this = this;
+    if (timer) {
+      clearTimeout(timer)
+    }
+    timer = setTimeout(() => {
+      callback.apply(_this, arg)
+    }, delay)
+  }
+}
+
 const CreateHome = () => {
   const navigate = useNavigate()
   const handlePublishClick = () => {
@@ -15,16 +29,36 @@ const CreateHome = () => {
 
   //拿对应用户id的数据库数据
   const [ariticleList, setAriticleList] = useState([]);
-  const fetchArticleList = useCallback(() => {
-    axios.get("/api/article/${id}")
-      .then(data => {
-        data = data.data
-        setAriticleList(data.data)
-      })
-  }, [])
+
+
+  //搜索关键词
+  const [inputValue, setInputValue] = useState("")
+  const [searchKeyword, setSearchKeyword] = useState("")
+
+  const handleChangeKeyword = useCallback(debounce((inputValue) => {
+    setSearchKeyword(inputValue)
+  }, 500), [])
+
   useEffect(() => {
-    fetchArticleList()
-  }, [fetchArticleList])
+    handleChangeKeyword(inputValue)
+  }, [handleChangeKeyword, inputValue])
+
+  //获取表单值
+  const handleInputChange = useCallback((event) => {
+    event.preventDefault();
+    setInputValue(event.target.value);
+  }, [])
+  //搜索
+  const handleSearchClick = useCallback(() => {
+    axios.get(`/api/article/bykeyword/${searchKeyword}`)
+      .then((response) => {
+        setAriticleList(response.data.data)
+      })
+  }, [searchKeyword])
+
+  useEffect(() => {
+    handleSearchClick()
+  }, [handleSearchClick])
   //将HTML文件转换为text
   const getText = (html) => {
     const doc = new DOMParser().parseFromString(html, "text/html")
@@ -35,11 +69,11 @@ const CreateHome = () => {
   const handleDelete = useCallback((articleId) => {
     try {
       axios.post(`/api/article/delete/${articleId}`)
-      fetchArticleList()
+      handleSearchClick()
     } catch (e) {
       message.error(e)
     }
-  }, [fetchArticleList])
+  }, [handleSearchClick])
 
   //渲染数据列表的组件
   const AriticleListComponent = () => {
@@ -73,43 +107,24 @@ const CreateHome = () => {
                   article.cover_url === null
                     ? <div style={{ border: "none" }}></div>
                     : <div className={styles.cover}>
-                      <img src={article.cover_url} />
+                      <img src={article.cover_url} alt="" />
                     </div>
                 }
 
               </div>
-
             )
           })
         }
       </div >
-
     )
   }
-
-  //搜索关键词
-  const [inputValue, setInputValue] = useState("")
-
-  //获取表单值
-  const handleInputChange = useCallback((event) => {
-    event.preventDefault();
-    setInputValue(event.target.value);
-
-  }, [inputValue])
-  //搜索
-  const handleSearchClick = useCallback(() => {
-    axios.get(`/api/article/bykeyword/${inputValue}`)
-      .then((response) => {
-        setAriticleList(response.data.data)
-      })
-  })
   return (
     <div className={styles.wrapper}>
       <div className={styles.headWrapper}>
         <button onClick={handlePublishClick}>写文章</button>
         <div className={styles.inputWrapper}>
           <input type="text" placeholder="请输入标题关键词" value={inputValue} onChange={handleInputChange}></input>
-          <span><img src={search} onClick={handleSearchClick}></img></span>
+          <span><img src={search} onClick={handleSearchClick} alt=""></img></span>
         </div>
       </div>
       <div className={styles.contentWrapper}>
@@ -117,7 +132,7 @@ const CreateHome = () => {
           {ariticleList?.length === 0 ?
             (<div className={styles.emptyWrapper}>
               <Empty description="这里什么都没有">
-                <Button type="primary">开始创作</Button>
+                <Button type="primary" onClick={handlePublishClick}>开始创作</Button>
               </Empty>
             </div>) :
             <AriticleListComponent />

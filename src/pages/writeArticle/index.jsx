@@ -7,6 +7,8 @@ import { IDomEditor, IEditorConfig, IToolbarConfig } from '@wangeditor/editor'
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Content } from "antd/es/layout/layout";
+import hljs from 'highlight.js'
+import 'highlight.js/styles/vs2015.css'
 
 const WriteArticle = () => {
   const [editor, setEditor] = useState(null)
@@ -124,10 +126,12 @@ const WriteArticle = () => {
       }
     }
   }
+  const codes = document.querySelectorAll('pre code')
+  codes.forEach((el) => {
+    hljs.highlightElement(el)
+  })
 
   //上传照片
-
-
   const props = {
     beforeUpload: (file) => {
       const imgType = ["image/png", "image/jpg", "image/jpeg"]
@@ -152,6 +156,15 @@ const WriteArticle = () => {
       option.onSuccess(data, data.data.url)
     }
   };
+  useEffect(() => {
+    // 配置 highlight.js
+    // 获取到内容中所有的code标签
+    const codes = document.querySelectorAll('code')
+    codes.forEach((el) => {
+      // 让code进行高亮
+      hljs.highlightElement(el)
+    })
+  }, [])
   return (
     <div className={styles.writeWrapper}>
       <div div className={styles.writeArea} >
@@ -162,7 +175,7 @@ const WriteArticle = () => {
           placeholder="请输入文章标题..."
           disabled={isSending}
         />
-        <div style={{ height: "100%" }}>
+        <div className={styles.editor} style={{ height: "100%" }}>
           <Toolbar
             editor={editor}
             defaultConfig={toolbarConfig}
@@ -174,7 +187,7 @@ const WriteArticle = () => {
             onCreated={setEditor}
             onChange={editor => setHtml(editor.getHtml())}
             mode="default"
-            style={{ height: "100%", overflowY: 'hidden' }}
+            style={{ minHeight: "500px", overflowY: 'hidden', backgroundColor: "#fff", padding: "0px 10px" }}
           />
         </div>
       </div >

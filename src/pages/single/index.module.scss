@@ -18,6 +18,7 @@
       flex-direction: column;
       height: 100px;
       width: 100%;
+      border-bottom: 1px solid gainsboro;
 
       .title {
         width: 100%;
@@ -34,12 +35,72 @@
         font-size: 14px;
         font-weight: 400;
         line-height: 22px;
+        color: rgb(81, 87, 103);
       }
     }
 
     .contentSection {
       min-height: 800px;
       width: 100%;
+
+      .editor-content-view {
+        border: 3px solid #ccc;
+        border-radius: 5px;
+        padding: 0 10px;
+        margin-top: 20px;
+        overflow-x: auto;
+      }
+
+      p,
+      li {
+        white-space: pre-wrap;
+        /* 保留空格 */
+      }
+
+      blockquote {
+        border-left: 8px solid #d0e5f2;
+        padding: 10px 10px;
+        margin: 10px 0;
+        background-color: #f1f1f1;
+      }
+
+      code {
+        font-family: monospace;
+        background-color: rgb(245, 242, 240);
+        line-height: 3cap;
+        font-size: large;
+        padding: 3px;
+        border-radius: 3px;
+      }
+
+      pre>code {
+        display: block;
+        padding: 10px;
+      }
+
+      table {
+        border-collapse: collapse;
+      }
+
+      td,
+      th {
+        border: 1px solid #ccc;
+        min-width: 50px;
+        height: 20px;
+      }
+
+      th {
+        background-color: #f1f1f1;
+      }
+
+      ul,
+      ol {
+        padding-left: 20px;
+      }
+
+      input[type="checkbox"] {
+        margin-right: 5px;
+      }
     }
   }
 }
