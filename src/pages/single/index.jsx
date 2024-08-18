@@ -29,7 +29,7 @@ const Single = () => {
     }
   }, [articleId])
 
-  const codes = document.querySelectorAll('pre code')
+  const codes = document.querySelectorAll('code')
   codes.forEach((el) => {
     hljs.highlightElement(el)
   })

@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useMemo, useState } from "react"
 import styles from "./index.module.scss"
 import { Avatar, Button, Col, Form, Input, Modal, Popconfirm, Popover, Row, message } from "antd"
 import axios from "axios"
-import searchLogo from "./imgs/search.png";
 import downArrow from "./imgs/downArrow.png";
 import PopContent from "./popCard/popContent";
 import PopTitle from "./popCard/popTitle";
@@ -20,8 +19,10 @@ const UserAvatar = ({
   //Form
   const [loginForm] = Form.useForm();
 
+  //验证手机号
   const validatePhoneNumber = useCallback((_, value) => {
     if (value) {
+      //正则验证
       let reg = /^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\d{8}$/;
       if (reg.test(value)) {
         return Promise.resolve()
@@ -37,10 +38,12 @@ const UserAvatar = ({
   const countDownTimeFunc = useCallback((releaseSecond) => {
     setReleaseSecond(releaseSecond)
     if (releaseSecond > 0) {
+      //倒计时大于0就开始倒数
       setTimeout(() => {
         countDownTimeFunc(releaseSecond - 1)
       }, 1000)
     } else {
+      //恢复按钮
       setGetVerifyCode(true)
     }
   }, [])
@@ -48,6 +51,7 @@ const UserAvatar = ({
   //VerifyCode
   const [getVerifyCode, setGetVerifyCode] = useState(true)
 
+  //获取手机号，发送到后端请求验证码，回复到前端
   const handleVerifyClick = useCallback(async () => {
     const phoneNumber = loginForm.getFieldValue("phoneNumber");
 
@@ -75,7 +79,7 @@ const UserAvatar = ({
     // message.success(`verifycode: ${verifyCode}`)
   }, [countDownTimeFunc, loginForm])
 
-
+  //取消modal框
   const handleCancle = useCallback(() => {
     loginForm.resetFields();
     setIsModalOpen(false);
@@ -84,23 +88,20 @@ const UserAvatar = ({
   let getUserInfo = useCallback(async () => {
     try {
       let { data } = await axios.get("/api/auth/getUserInfo")
-      setUserInfo(data.data)
+      if (data.code === 200) {
+        setUserInfo(data.data)
+      }
     } catch (e) {
       console.log(e)
     }
   }, [])
 
+  //cookie jwt自动登录
   useEffect(() => {
-    let cookies = document.cookie.split(";")
-    let hasToken = cookies.some((value) => {
-      return value.trim().startsWith("access_token")
-    })
-    if (hasToken) {
-      getUserInfo()
-    }
+    getUserInfo()
   }, [getUserInfo])
 
-  //handleLoginClick
+  //输入手机号与验证码后打包到后端进行验证，并返回错误或登录
   const handleLoginClick = useCallback(async () => {
     loginForm.validateFields()
       .then(async (formData) => {
@@ -110,13 +111,14 @@ const UserAvatar = ({
             phone: formData?.phoneNumber,
             verifyCode: formData?.verifyCode
           })
+          //statusCode !== 200 说明校验失败
           if (data?.code !== 200) {
             message.error(data?.msg || "登陆失败")
             return;
           }
+          //校验成功则调用handleCancle函数，设置modal框状态为flase然后重置表单
           handleCancle()
           setUserInfo(data.data)
-
         } catch (e) {
           console.log(e)
         }
@@ -125,8 +127,9 @@ const UserAvatar = ({
   }, [loginForm, handleCancle])
 
   const navigate = useNavigate()
+  //退出登录
   const handleLogoutClick = useCallback(async () => {
-    let logout = await axios.post('/api/auth/userLogout')
+    let logout = await axios.post('/api/auth/userLogout') //为了请求后端在注销后删掉cookie
     setUserInfo(null)
     message.success("注销成功！")
     navigate('/')
@@ -136,6 +139,7 @@ const UserAvatar = ({
     <>
       {isLogin
         ?
+        //登录状态：显示Avatar，点击后显示是否退出
         <Popconfirm
           title="确认退出？"
           onConfirm={handleLogoutClick}
@@ -145,6 +149,8 @@ const UserAvatar = ({
           <Avatar size={34} style={{ cursor: "pointer" }} />
         </Popconfirm>
         : (
+          //不是登录状态：显示登录/注册按钮
+          //点击后设置isModalOpen状态为true，显示Modal组件（组件内open参数为true则显示）
           <div className={styles.button} >
             <button onClick={() => setIsModalOpen(true)}>
               登录 <div className={styles.line}></div> 注册
@@ -183,6 +189,8 @@ const UserAvatar = ({
                   style={{ width: "100%" }}
                   onClick={handleVerifyClick}
                   disabled={!getVerifyCode}
+                //getVerifyCode状态为true说明不在等待验证码的状态，显示获取验证码
+                //为false，说明正在等待，禁用按钮，显示n秒后获取
                 >{getVerifyCode ? "获取验证码" : `${releaseSecond}秒后获取`}</Button>
               </Col>
             </Row>
@@ -190,6 +198,7 @@ const UserAvatar = ({
           </Form.Item>
         </Form>
         <Form.Item>
+
           <Button style={{ width: "100%" }} type="primary" onClick={handleLoginClick}>登录 / 注册</Button>
         </Form.Item>
       </Modal>
@@ -204,6 +213,7 @@ const Navbar = () => {
   const isLogin = useMemo(() => {
     return userInfo !== null;
   }, [userInfo]);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   let handleCreateCenter = useCallback(() => {
     // 先判断有没有登录
@@ -211,9 +221,9 @@ const Navbar = () => {
       setIsModalOpen(true)
       return;
     }
-    //登陆后跳转链接
+    //若登录状态isLogin === true，就跳转链接
     navigate('/createCenter')
-  }, [isLogin])
+  }, [isLogin, navigate])
 
   const location = useLocation();
   const isCreateCenter = useMemo(() => {
@@ -227,7 +237,7 @@ const Navbar = () => {
         {
           isCreateCenter
             ? (
-              <div className={styles.menuWrap} style={{ fontSize: "20px", color: "#1d7dfa" }}>
+              <div className={styles.menuWrap} style={{ fontSize: "20px", color: "#1d7dfa", cursor: "default" }}>
                 创作者中心
               </div>
             )
@@ -264,10 +274,10 @@ const Navbar = () => {
 
                 </div>
                 <div className={styles.searchBar}>
-                  <input type="text" placeholder="搜索小狗炒鱼" />
+                  {/* <input type="text" placeholder="搜索小狗炒鱼" />
                   <div className={styles.searchIcon}>
                     <img src={searchLogo} alt="" />
-                  </div>
+                  </div> */}
                 </div>
                 <div className={styles.writeCenter}>
                   <div className={styles.writeContainer}>
