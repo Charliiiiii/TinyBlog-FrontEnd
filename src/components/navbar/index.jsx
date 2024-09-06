@@ -15,6 +15,7 @@ const UserAvatar = ({
   isModalOpen,
   setIsModalOpen
 }) => {
+  const navigate = useNavigate()
   //登陆注册弹出框
   //Form
   const [loginForm] = Form.useForm();
@@ -65,7 +66,6 @@ const UserAvatar = ({
     countDownTimeFunc(60);
     try {
       let data = await axios.get(`/api/auth/getVerifyCode?phone=${phoneNumber}`)
-      console.log(data)
       data = data.data
       if (data?.code === 200) {
         message.success(`验证码：${data?.data?.verifyCode || "xxxx"}`)
@@ -76,7 +76,6 @@ const UserAvatar = ({
       console.log(error)
       message.error("获取验证码失败")
     }
-    // message.success(`verifycode: ${verifyCode}`)
   }, [countDownTimeFunc, loginForm])
 
   //取消modal框
@@ -126,10 +125,10 @@ const UserAvatar = ({
       .catch()
   }, [loginForm, handleCancle])
 
-  const navigate = useNavigate()
+
   //退出登录
   const handleLogoutClick = useCallback(async () => {
-    let logout = await axios.post('/api/auth/userLogout') //为了请求后端在注销后删掉cookie
+    let logout = await axios.post('/api/auth/userLogout') //请求后端在注销后删掉cookie
     setUserInfo(null)
     message.success("注销成功！")
     navigate('/')
@@ -191,7 +190,9 @@ const UserAvatar = ({
                   disabled={!getVerifyCode}
                 //getVerifyCode状态为true说明不在等待验证码的状态，显示获取验证码
                 //为false，说明正在等待，禁用按钮，显示n秒后获取
-                >{getVerifyCode ? "获取验证码" : `${releaseSecond}秒后获取`}</Button>
+                >
+                  {getVerifyCode ? "获取验证码" : `${releaseSecond}秒后获取`}
+                </Button>
               </Col>
             </Row>
 
@@ -285,7 +286,6 @@ const Navbar = () => {
                       创作者中心
                     </button>
                     <div className={styles.downArrow}>
-
                       <Popover placement="bottomRight" title={<PopTitle />} content={<PopContent />} arrow={false}>
                         <img src={downArrow} alt="" />
                       </Popover>

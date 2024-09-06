@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import styles from "./index.module.scss"
-import { message } from "antd";
+import { Button, message } from "antd";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
 import hljs from 'highlight.js'
@@ -20,7 +20,6 @@ const Single = () => {
       axios.get(`/api/article/${articleId}/article`)
         .then((result) => {
           let data = result.data.data
-          console.log(data)
           setArticleData(data[0])
         })
     } catch (err) {
@@ -47,7 +46,7 @@ const Single = () => {
         </div>
         <div className={styles.contentSection}>
           <div dangerouslySetInnerHTML={{ __html: articleData?.content || '' }} />
-          {/* {articleData?.content} */}
+          {/* <div>{parse(articleData?.content)}</div> */}
         </div>
       </div>
     </div>

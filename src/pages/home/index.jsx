@@ -57,10 +57,6 @@ const Home = () => {
     const doc = new DOMParser().parseFromString(html, "text/html")
     return doc.body.textContent
   }
-  // const getText = (html) => {
-  //   const doc = xmlFormat(html);
-  //   return doc;
-  // }
 
   //渲染数据列表的组件
   const AriticleListComponent = () => {
